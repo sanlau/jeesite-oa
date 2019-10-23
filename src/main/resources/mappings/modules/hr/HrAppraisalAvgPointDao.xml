@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.hr.dao.HrAppraisalAvgPointDao">
+    
+	<sql id="hrAppraisalAvgPointColumns">
+		a.id AS "id",
+		a.examinee_user_id AS "examineeUserId",
+		a.appraisal_manager_id AS "appraisalManagerId",
+		a.avg_point AS "avgPoint"
+	</sql>
+	
+	<sql id="hrAppraisalAvgPointJoins">
+	</sql>
+    
+    
+    <sql id="hrAppraisalAvgPointAllColumns">
+		a.id AS "id",
+		a.examinee_user_id AS "examineeUserId",
+		a.appraisal_manager_id AS "appraisalManagerId",
+		a.avg_point AS "avgPoint",
+		c.name AS "appraisalManagerName",
+		d.name AS "examineeUserName"
+	</sql>
+	
+	<sql id="hrAppraisalAvgPointAllJoins">
+		left join hr_appraisal_manager c on c.id=a.appraisal_manager_id
+		left join sys_user d on d.id=a.examinee_user_id
+	</sql>
+	
+	
+	<select id="findAll" resultType="HrAppraisalAvgPoint">
+		SELECT 
+			<include refid="hrAppraisalAvgPointAllColumns"/>
+		FROM hr_appraisal_avg_point a
+		<include refid="hrAppraisalAvgPointAllJoins"/>
+		WHERE a.appraisal_manager_id = #{id}
+	</select>
+	
+	
+	<select id="get" resultType="HrAppraisalAvgPoint">
+		SELECT 
+			<include refid="hrAppraisalAvgPointColumns"/>
+		FROM hr_appraisal_avg_point a
+		<include refid="hrAppraisalAvgPointJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="HrAppraisalAvgPoint">
+		SELECT 
+			<include refid="hrAppraisalAvgPointColumns"/>
+		FROM hr_appraisal_avg_point a
+		<include refid="hrAppraisalAvgPointJoins"/>
+		<where>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="HrAppraisalAvgPoint">
+		SELECT 
+			<include refid="hrAppraisalAvgPointColumns"/>
+		FROM hr_appraisal_avg_point a
+		<include refid="hrAppraisalAvgPointJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO hr_appraisal_avg_point(
+			id,
+			examinee_user_id,
+			appraisal_manager_id,
+			avg_point
+		) VALUES (
+			#{id},
+			#{examineeUserId},
+			#{appraisalManagerId},
+			#{avgPoint}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE hr_appraisal_avg_point SET 	
+			examinee_user_id = #{examineeUserId},
+			appraisal_manager_id = #{appraisalManagerId},
+			avg_point = #{avgPoint}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM hr_appraisal_avg_point
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

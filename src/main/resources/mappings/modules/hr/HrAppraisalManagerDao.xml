@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.hr.dao.HrAppraisalManagerDao">
+    
+    
+
+
+	<sql id="hrAppraisalManagerColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.start_time AS "startTime",
+		a.end_time AS "endTime",
+		a.status AS "status",
+		a.executor_id AS "executorId",
+		a.appraisal_template_id AS "appraisalTemplateId",
+		a.examinee_user_id AS "examineeUserId",
+		a.examiner_user_id AS "examinerUserId"
+	</sql>
+	
+	<sql id="hrAppraisalManagerListColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.start_time AS "startTime",
+		a.end_time AS "endTime",
+		a.status AS "status",
+		a.executor_id AS "executorId",
+		a.appraisal_template_id AS "appraisalTemplateId",
+		a.examinee_user_id AS "examineeUserId",
+		a.examiner_user_id AS "examinerUserId",
+		LENGTH(a.examinee_user_id) - LENGTH(REPLACE(a.examinee_user_id,',',''))+1 AS "examineeNum",
+		b.name AS "templateName"
+	</sql>
+	
+	<sql id="hrAppraisalManagerJoins">
+	</sql>
+	
+    <!--     select hr_appraisal_manager.id,hr_appraisal_manager.examinee_user_id,GROUP_CONCAT(sys_role.name) as '姓名'
+from hr_appraisal_manager JOIN sys_role
+ON FIND_IN_SET(sys_role.id,hr_appraisal_manager.examinee_user_id)
+GROUP BY hr_appraisal_manager.id
+ -->
+ 	<sql id="hrAppraisalManagerAllColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.start_time AS "startTime",
+		a.end_time AS "endTime",
+		a.status AS "status",
+		a.executor_id AS "executorId",
+		a.appraisal_template_id AS "appraisalTemplateId",
+		a.examinee_user_id AS "examineeUserId",
+		a.examiner_user_id AS "examinerUserId",
+		GROUP_CONCAT(c.name) AS "examineeUserIdName",
+		d.name AS "examinerUserIdName"
+	</sql>
+	
+	<sql id="hrAppraisalManagerAllJoins">
+		left join sys_user c on find_in_set(c.id,a.examinee_user_id)
+		left join sys_user d on d.id=a.examiner_user_id
+	</sql>
+	
+	<sql id="hrAppraisalManagerListJoins">
+	   left join hr_appraisal_template b on b.appraisal_template_id = a.appraisal_template_id
+	</sql>
+	
+	<select id="getHrAppraisalManagerList" resultType="HrAppraisalManager">
+		SELECT 
+			<include refid="hrAppraisalManagerListColumns"/>
+		FROM hr_appraisal_manager a
+		 <include refid="hrAppraisalManagerListJoins"/> 
+		WHERE a.examiner_user_id = #{id}
+	</select>
+	
+	
+    <select id="getAll" resultType="HrAppraisalManager">
+		SELECT 
+			<include refid="hrAppraisalManagerAllColumns"/>
+		FROM hr_appraisal_manager a
+		<include refid="hrAppraisalManagerAllJoins"/> 
+		WHERE a.id = #{id}
+		GROUP BY a.id
+	</select>
+	
+	<select id="get" resultType="HrAppraisalManager">
+		SELECT 
+			<include refid="hrAppraisalManagerColumns"/>
+		FROM hr_appraisal_manager a
+		<include refid="hrAppraisalManagerJoins"/> 
+		WHERE a.id = #{id}
+	</select>
+	
+	
+	
+	<select id="findList" resultType="HrAppraisalManager">
+		SELECT 
+			<include refid="hrAppraisalManagerColumns"/>
+		FROM hr_appraisal_manager a
+		<include refid="hrAppraisalManagerJoins"/>
+		<where>
+			
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="HrAppraisalManager">
+		SELECT 
+			<include refid="hrAppraisalManagerColumns"/>
+		FROM hr_appraisal_manager a
+		<include refid="hrAppraisalManagerJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO hr_appraisal_manager(
+			id,
+			name,
+			start_time,
+			end_time,
+			status,
+			executor_id,
+			appraisal_template_id,
+			examinee_user_id,
+			examiner_user_id
+		) VALUES (
+			#{id},
+			#{name},
+			#{startTime},
+			#{endTime},
+			#{status},
+			#{executorId},
+			#{appraisalTemplateId},
+			#{examineeUserId},
+			#{examinerUserId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE hr_appraisal_manager SET 	
+			name = #{name},
+			start_time = #{startTime},
+			end_time = #{endTime},
+			status = #{status},
+			executor_id = #{executorId},
+			appraisal_template_id = #{appraisalTemplateId},
+			examinee_user_id = #{examineeUserId},
+			examiner_user_id = #{examinerUserId}
+		WHERE id = #{id}
+	</update>
+	
+	
+	
+	<update id="updateStatus">
+		UPDATE hr_appraisal_manager SET 	
+			status = #{status}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<update id="delete">
+		DELETE FROM hr_appraisal_manager
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

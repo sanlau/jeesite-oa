@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.hr.dao.HrAppraisalTemplateScoreDao">
+    
+	<sql id="hrAppraisalTemplateScoreColumns">
+		a.id AS "id",
+		a.appraisal_template_id AS "appraisalTemplateId",
+		a.name AS "name",
+		a.standard_score AS "standardScore",
+		a.low_scope AS "lowScope",
+		a.high_scope AS "highScope",
+		a.description AS "description"
+	</sql>
+	
+	<sql id="hrAppraisalTemplateScoreJoins">
+	</sql>
+    
+	<select id="get" resultType="HrAppraisalTemplateScore">
+		SELECT 
+			<include refid="hrAppraisalTemplateScoreColumns"/>
+		FROM hr_appraisal_template_score a
+		<include refid="hrAppraisalTemplateScoreJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="getTemplateid" resultType="HrAppraisalTemplateScore">
+		SELECT 
+			<include refid="hrAppraisalTemplateScoreColumns"/>
+		FROM hr_appraisal_template_score a
+		<include refid="hrAppraisalTemplateScoreJoins"/>
+		WHERE a.appraisal_template_id = #{id}
+	</select>
+	
+	
+	<select id="findList" resultType="HrAppraisalTemplateScore">
+		SELECT 
+			<include refid="hrAppraisalTemplateScoreColumns"/>
+		FROM hr_appraisal_template_score a
+		<include refid="hrAppraisalTemplateScoreJoins"/>
+		<where>
+			
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="appraisalTemplateId != null and appraisalTemplateId != ''">
+				AND a.appraisal_template_id = #{appraisalTemplateId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="HrAppraisalTemplateScore">
+		SELECT 
+			<include refid="hrAppraisalTemplateScoreColumns"/>
+		FROM hr_appraisal_template_score a
+		<include refid="hrAppraisalTemplateScoreJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO hr_appraisal_template_score(
+			id,
+			appraisal_template_id,
+			name,
+			standard_score,
+			low_scope,
+			high_scope,
+			description
+		) VALUES 
+		<foreach collection="hrscore" item="hr" separator="," >
+			(#{hr.id},
+			#{appraisalTemplateId},
+			#{hr.name},
+			#{hr.standardScore},
+			#{hr.lowScope},
+			#{hr.highScope},
+			#{hr.description}
+			)
+		</foreach>
+	</insert>
+	
+	<update id="update">
+		UPDATE hr_appraisal_template_score SET 	
+			appraisal_template_id = #{appraisalTemplateId},
+			name = #{name},
+			standard_score = #{standardScore},
+			low_scope = #{lowScope},
+			high_scope = #{highScope},
+			description = #{description}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM hr_appraisal_template_score
+		WHERE id = #{id}
+	</update>
+	
+	<update id="deleteall">
+		DELETE FROM hr_appraisal_template_score
+		WHERE id in(
+		<foreach collection="ids" item="is" index="index" separator="," >
+			#{is}
+		</foreach>)
+	</update>
+	
+	
+</mapper>

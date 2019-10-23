@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.hr.dao.HrAppraisalTemplateDao">
+    
+	<sql id="hrAppraisalTemplateColumns">
+		a.appraisal_template_id AS "appraisalTemplateId",
+		a.name AS "name",
+		a.category_id AS "categoryId",
+		a.creator_user_id AS "creatorUserId",
+		a.create_time AS "createTime",
+		a.description AS "description",
+		b.category_id AS "cateId",
+		b.name AS "cateName",
+		c.id AS "sysRoleId",
+		c.name AS "sysRoleName"
+	</sql>
+	
+	<sql id="hrAppraisalTemplateJoins">
+		left join hr_appraisal_template_category b on b.category_id = a.category_id
+		left join sys_role c on c.id=a.creator_user_id
+	</sql>
+    
+ 
+	<select id="get" resultType="HrAppraisalTemplate">
+		SELECT 
+			<include refid="hrAppraisalTemplateColumns"/>
+		FROM hr_appraisal_template a
+		<include refid="hrAppraisalTemplateJoins"/>
+		WHERE a.appraisal_template_id = #{appraisalTemplateId}
+	</select>
+	
+	<select id="findList" resultType="HrAppraisalTemplate">
+		SELECT 
+			<include refid="hrAppraisalTemplateColumns"/>
+		FROM hr_appraisal_template a
+		<include refid="hrAppraisalTemplateJoins"/>
+		<where>
+			
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="HrAppraisalTemplate">
+		SELECT 
+			<include refid="hrAppraisalTemplateColumns"/>
+		FROM hr_appraisal_template a
+		<include refid="hrAppraisalTemplateJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO hr_appraisal_template(
+			appraisal_template_id,
+			name,
+			category_id,
+			creator_user_id,
+			create_time,
+			description
+		) VALUES (
+			#{appraisalTemplateId},
+			#{name},
+			#{categoryId},
+			#{creatorUserId},
+			#{createTime},
+			#{description}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE hr_appraisal_template SET 	
+			name = #{name},
+			category_id = #{categoryId},
+			creator_user_id = #{creatorUserId},
+			create_time = #{createTime},
+			description = #{description}
+		WHERE appraisal_template_id = #{appraisalTemplateId}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM hr_appraisal_template
+		WHERE appraisal_template_id = #{appraisalTemplateId}
+	</update>
+	
+</mapper>

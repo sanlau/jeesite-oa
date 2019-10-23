@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.hr.dao.HrAppraisalPointDao">
+    
+	<sql id="hrAppraisalPointColumns">
+		a.id AS "id",
+		a.examinee_user_id AS "examineeUserId",
+		a.examiner_user_id AS "examinerUserId",
+		a.appraisal_score_id AS "appraisalScoreId",
+		a.appraisal_manager_id AS "appraisalManagerId",
+		a.point AS "point",
+		a.comment AS "comment"
+	</sql>
+	
+	<sql id="hrAppraisalPointJoins">
+	</sql>
+    
+    
+    <sql id="hrAppraisalPointAllColumns">
+		a.id AS "id",
+		a.examinee_user_id AS "examineeUserId",
+		a.examiner_user_id AS "examinerUserId",
+		a.appraisal_score_id AS "appraisalScoreId",
+		a.appraisal_manager_id AS "appraisalManagerId",
+		a.point AS "point",
+		a.comment AS "comment",
+		c.name AS "appraisalManagerName",
+		d.name AS "examineeUserName",
+		e.name AS "appraisalScoreName"
+	</sql>
+	
+	<sql id="hrAppraisalPointAllJoins">
+		left join hr_appraisal_manager c on c.id=a.appraisal_manager_id
+		left join sys_user d on d.id=a.examinee_user_id
+		left join hr_appraisal_template_score e on e.id=a.appraisal_score_id
+	</sql>
+	
+	
+	<sql id="hrAppraisalPointDetailColumns">
+		a.id AS "id",
+		a.examinee_user_id AS "examineeUserId",
+		a.examiner_user_id AS "examinerUserId",
+		a.appraisal_score_id AS "appraisalScoreId",
+		a.appraisal_manager_id AS "appraisalManagerId",
+		a.point AS "point",
+		a.comment AS "comment",
+		c.name AS "appraisalManagerName",
+		d.name AS "examineeUserName",
+		e.name AS "appraisalScoreName"
+	</sql>
+	
+	<sql id="hrAppraisalPointDetailJoins">
+		left join hr_appraisal_manager c on c.id=a.appraisal_manager_id
+		left join sys_user d on d.id=a.examinee_user_id
+		left join hr_appraisal_template_score e on e.id=a.appraisal_score_id
+	</sql>
+	
+	
+	<select id="get" resultType="HrAppraisalPoint">
+		SELECT 
+			<include refid="hrAppraisalPointColumns"/>
+		FROM hr_appraisal_point a
+		<include refid="hrAppraisalPointJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	
+	<select id="findId" resultType="String">
+		SELECT 
+			a.examinee_user_id
+		FROM hr_appraisal_point a
+		WHERE a.appraisal_manager_id = #{id}
+	</select>
+	
+	
+	<select id="findAllPoint" resultType="HrAppraisalPoint">
+		SELECT 
+			<include refid="hrAppraisalPointColumns"/>
+		FROM hr_appraisal_point a
+		<include refid="hrAppraisalPointJoins"/>
+		WHERE a.appraisal_manager_id = #{id}
+	</select>
+	
+	<select id="findAll" resultType="HrAppraisalPoint">
+		SELECT 
+			<include refid="hrAppraisalPointAllColumns"/>
+		FROM hr_appraisal_point a
+		<include refid="hrAppraisalPointAllJoins"/>
+		WHERE a.appraisal_manager_id = #{id}
+	</select>
+	
+	
+	<select id="findDetail" resultType="HrAppraisalPoint">
+		SELECT 
+			<include refid="hrAppraisalPointDetailColumns"/>
+		FROM hr_appraisal_point a
+		<include refid="hrAppraisalPointDetailJoins"/>
+		WHERE a.appraisal_manager_id = #{id} and a.examinee_user_id=#{examineeUserId}
+	</select>
+	
+	<select id="findList" resultType="HrAppraisalPoint">
+		SELECT 
+			<include refid="hrAppraisalPointColumns"/>
+		FROM hr_appraisal_point a
+		<include refid="hrAppraisalPointJoins"/>
+		<where>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="HrAppraisalPoint">
+		SELECT 
+			<include refid="hrAppraisalPointColumns"/>
+		FROM hr_appraisal_point a
+		<include refid="hrAppraisalPointJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO hr_appraisal_point(
+			id,
+			examinee_user_id,
+			examiner_user_id,
+			appraisal_score_id,
+			appraisal_manager_id,
+			point,
+			comment
+		) VALUES (
+			#{id},
+			#{examineeUserId},
+			#{examinerUserId},
+			#{appraisalScoreId},
+			#{appraisalManagerId},
+			#{point},
+			#{comment}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE hr_appraisal_point SET 	
+			examinee_user_id = #{examineeUserId},
+			examiner_user_id = #{examinerUserId},
+			appraisal_score_id = #{appraisalScoreId},
+			appraisal_manager_id = #{appraisalManagerId},
+			point = #{point},
+			comment = #{comment}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM hr_appraisal_point
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.hr.dao.HrAppraisalTemplateCategory1Dao">
+    
+	<sql id="hrAppraisalTemplateCategory1Columns">
+		a.category_id AS "categoryId",
+		a.name AS "name",
+		a.description AS "description"
+	</sql>
+	
+	<sql id="hrAppraisalTemplateCategory1Joins">
+	</sql>
+    
+	<select id="get" resultType="HrAppraisalTemplateCategory1">
+		SELECT 
+			<include refid="hrAppraisalTemplateCategory1Columns"/>
+		FROM hr_appraisal_template_category a
+		<include refid="hrAppraisalTemplateCategory1Joins"/>
+		WHERE a.category_id = #{categoryId}
+	</select>
+	
+	<select id="findList" resultType="HrAppraisalTemplateCategory1">
+		SELECT 
+			<include refid="hrAppraisalTemplateCategory1Columns"/>
+		FROM hr_appraisal_template_category a
+		<include refid="hrAppraisalTemplateCategory1Joins"/>
+		<where>
+			
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="HrAppraisalTemplateCategory1">
+		SELECT 
+			<include refid="hrAppraisalTemplateCategory1Columns"/>
+		FROM hr_appraisal_template_category a
+		<include refid="hrAppraisalTemplateCategory1Joins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO hr_appraisal_template_category(
+			category_id,
+			name,
+			description
+		) VALUES (
+			#{categoryId},
+			#{name},
+			#{description}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE hr_appraisal_template_category SET 	
+			name = #{name},
+			description = #{description}
+		WHERE category_id = #{categoryId}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM hr_appraisal_template_category
+		WHERE category_id = #{categoryId}
+	</update>
+	
+</mapper>
